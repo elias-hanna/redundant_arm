@@ -149,7 +149,7 @@ class ArmEnv(Parent):
 
     # THE AGENT
     #  General settings
-    self.dof = 20  # Degrees of freedom
+    self.dof = 100  # Degrees of freedom
     self.dim = [2, self.dof]  # [dim(task), dim(posture)]
     self.armLength = 1.0
     self.segLen = self.armLength / self.dof  # Length of an arm segment
