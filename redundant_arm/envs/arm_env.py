@@ -138,11 +138,11 @@ class ArmEnv(Parent):
   def __init__(self, seed=None):
     """ Constructor
     :param seed: the random seed for the environment
-    :param max_steps: the maximum number of steps the episode lasts
+    :param _max_episode_steps: the maximum number of steps the episode lasts
     :return:
     """
     super(ArmEnv, self).__init__()
-    self.max_Steps = 250
+    self._max_episode_steps = 250
     self.ts = 0
     self.seed(seed)
     self.task_type = 'multi' # multi or sequence. If multi there are multiple goal areas that can be reached. If sequence, it has to visit all of them
@@ -262,7 +262,7 @@ class ArmEnv(Parent):
     reward = self.calculate_reward(x)
     self.ts += 1
 
-    done = stopped or self.ts >= self.max_Steps
+    done = stopped or self.ts >= self._max_episode_steps
     return self.get_state(), reward, done, {"End effector pose": x}
 
   def calculate_reward(self, x):
