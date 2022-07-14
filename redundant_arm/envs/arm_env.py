@@ -79,6 +79,7 @@ class Parent(gym.Env):
     pass
 
   def drawCircle(self, x, col, rad=4, width=0):
+    import pdb; pdb.set_trace()
     pos = self.displace + np.int32(x * self.frameside)
     pg.draw.circle(self.screen, col, pos, rad, width)
 
@@ -143,6 +144,7 @@ class ArmEnv(Parent):
     """
     super(ArmEnv, self).__init__()
     self._max_episode_steps = 250
+    self.max_steps = 250
     self.ts = 0
     self.seed(seed)
     self.task_type = 'multi' # multi or sequence. If multi there are multiple goal areas that can be reached. If sequence, it has to visit all of them
@@ -165,6 +167,8 @@ class ArmEnv(Parent):
     #  Start conditions - this is overwritten if 'random_start' or 'm_start' is given.
     aStart = 1. * 4 * np.pi / self.dof
     self.angles = np.linspace(aStart, aStart / 4, self.dof)  # Start in a spiral
+    # aStart = 0
+    # self.angles = [0.]*self.dof # Start in a straight line
     self.joint_speeds = np.zeros_like(self.angles)
     self.angle_old = self.angles
     self.angle_drawn = self.angles  # For graphics
@@ -247,6 +251,8 @@ class ArmEnv(Parent):
       dt = .01
       angle_next = action/2 * dt**2 + self.joint_speeds * dt + self.angles
 
+      eps = np.pi/6
+      angle_next = np.clip(angle_next, -self.aMax+eps, self.aMax-eps)
       # If the update can be made
       if self.isLegal(self.ang2q(angle_next), self.ang2q(self.angles)):
         self.joint_speeds = (angle_next - self.angles)/dt
@@ -328,6 +334,7 @@ class ArmEnv(Parent):
         y2 = y1 + walls[i, 3]
 
         if x1 < joint_coord[j, 0]  < x2 and y1 <  joint_coord[j, 1] < y2:
+          # print('stopped because of wall')
           return False
 
     # TEST 3: Would it go through itself?
@@ -357,6 +364,8 @@ class ArmEnv(Parent):
     self.resetting = True # This one is used so the arm can move how it wants to get to the reset pose
     aStart = 1. * 4 * np.pi / self.dof
     self.angles = np.linspace(aStart, aStart / 4, self.dof)  # Start in a spiral
+    # aStart = 0.
+    # self.angles = np.array([0.]*self.dof)  # Start in a straight line
     self.joint_speeds = np.zeros_like(self.angles)
     self.angle_old = self.angles
     self.angle_drawn = self.angles  # For graphics
@@ -398,12 +407,11 @@ class ArmEnv(Parent):
     for rew_area in self.reward_areas:
       self.drawSquare(rew_area[0], rew_area[1], RED)
 
+    # if x_goal is not None:
+    #   self.drawCircle(x_goal, RED)
 
-    if x_goal is not None:
-      self.drawCircle(x_goal, RED)
-
-    if x_long_goal is not None:
-      self.drawCross(x_long_goal, BLUE)
+    # if x_long_goal is not None:
+    #   self.drawCross(x_long_goal, BLUE)
 
     pg.display.update()
 
