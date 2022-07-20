@@ -136,7 +136,7 @@ class ArmEnv(Parent):
   Redundant arm environment. Developed by Pontus Loviken. You can find the original code here:
   https://github.com/Loviken/MCGB?fbclid=IwAR0fjENMPGVWg5s8ri7gr3t603j4zoDd3_oG11W_4t2O3fNHShmcuFSEqZI
   """
-  def __init__(self, seed=None):
+  def __init__(self, seed=None, dof=20):
     """ Constructor
     :param seed: the random seed for the environment
     :param _max_episode_steps: the maximum number of steps the episode lasts
@@ -151,7 +151,7 @@ class ArmEnv(Parent):
 
     # THE AGENT
     #  General settings
-    self.dof = 20  # Degrees of freedom
+    self.dof = dof  # Degrees of freedom
     self.dim = [2, self.dof]  # [dim(task), dim(posture)]
     self.armLength = 1.0
     self.segLen = self.armLength / self.dof  # Length of an arm segment
@@ -474,3 +474,23 @@ class ArmEnv(Parent):
     # self.wall_displace 	= None
     self.screen = None
     self.frameside = None
+
+
+if __name__ == '__main__':
+  import gym
+  import redundant_arm
+  import time
+  import diversity_algorithms.environments.env_imports
+  
+  gym_args = {'dof':100}
+  # RedundantArmPos-v0
+  env = gym.make('RedundantArmPos-v0', **gym_args)
+
+  env.reset()
+  
+  for _ in range(250):
+    action = env.action_space.sample()
+    obs, r, done, info = env.step(action)
+    # print(len(obs))
+    env.render()
+    time.sleep(0.01)
