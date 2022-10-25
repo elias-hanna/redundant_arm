@@ -1,4 +1,5 @@
-# Created by Giuseppe Paolo 
+# Created by Giuseppe Paolo
+# Modified by Elias Hanna
 # Date: 11/09/2020
 
 import gym
@@ -139,7 +140,7 @@ class ArmEnv(Parent):
   def __init__(self, seed=None, dof=20):
     """ Constructor
     :param seed: the random seed for the environment
-    :param _max_episode_steps: the maximum number of steps the episode lasts
+    :param dof: the number of degrees of freedom of the arm
     :return:
     """
     super(ArmEnv, self).__init__()
@@ -483,14 +484,13 @@ if __name__ == '__main__':
   import diversity_algorithms.environments.env_imports
   
   gym_args = {'dof':100}
-  # RedundantArmPos-v0
-  env = gym.make('RedundantArmPos-v0', **gym_args)
+  env = gym.make('RedundantArm-v0', **gym_args)
 
   env.reset()
   
   for _ in range(250):
     action = env.action_space.sample()
     obs, r, done, info = env.step(action)
-    # print(len(obs))
+    print(done)
     env.render()
     time.sleep(0.01)
